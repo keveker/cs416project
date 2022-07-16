@@ -6,7 +6,10 @@
 </svg>
 <script>
 async function init() {
-const data = await d3.csv('https://flunky.github.io/cars2017.csv');
+//const data_cars = await d3.csv('https://flunky.github.io/cars2017.csv');
+//const data_WHO = await d3.csv('WHO-COVID-19-global-data.csv');
+const data = await d3.csv('WHO-COVID-19-global-data.csv');
+
 var scale_x = d3.scaleLog()
   .domain([10, 150])
   .range([0, 200]);
@@ -18,9 +21,9 @@ var tickvals =[10,20,50,100]
 d3.select('svg').append("g")
   .attr("transform","translate(50,50)")
   .selectAll("circle").data(data).enter().append("circle")
-  .attr("cx", function(d){return scale_x(parseFloat(d.AverageCityMPG))})
-  .attr("cy", function(d){return scale_y(parseFloat(d.AverageHighwayMPG))})
-  .attr("r", function(d){return (parseInt(d.EngineCylinders)+2)})
+  .attr("cx", function(d){return scale_x(parseFloat(d.New_cases))})
+  .attr("cy", function(d){return scale_y(parseFloat(d.New_cases))})
+  .attr("r", 1)
 d3.select('svg').append("g")
   .attr("transform","translate(50,50)")
   .call(d3.axisLeft(scale_y).tickValues(tickvals).tickFormat(d3.format("~s")))
