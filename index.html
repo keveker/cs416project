@@ -13,13 +13,21 @@
 async function init() {
 //const data_cars = await d3.csv('https://flunky.github.io/cars2017.csv');
 //const data_WHO = await d3.csv('WHO-COVID-19-global-data.csv');
-const data = await d3.csv('WHO-COVID-19-global-data.csv');
+const data = await d3.csv("https://keveker.github.io/cs416project/WHO-COVID-19-global-data.csv");
+
+async function loadData() {
+    const returnData = {};
+    await d3.csv("https://keveker.github.io/cs416project/WHO-COVID-19-global-data.csv",function(d){
+
+    });
+    return returnData;
+}
 
 var scale_x = d3.scaleLog()
-  .domain([1, 10,000,000])
+  .domain([1, 10000000])
   .range([0, 800]);
 var scale_y = d3.scaleLog()
-  .domain([1, 100,000])
+  .domain([1, 100000])
   .range([800, 0]);
 var tickvalsx =[1,10,100,1000,10000,100000,1000000,10000000]
 var tickvalsy =[1,10,100,1000,10000,100000]
@@ -27,11 +35,13 @@ var tickvalsy =[1,10,100,1000,10000,100000]
 d3.select('svg').append("g")
   .attr("transform","translate(50,50)")
   .selectAll("circle").data(data).enter().append("circle")
-  //.attr("cx", function(d){return scale_x(Math.min(parseFloat(d.New_cases),0.001))})
-  //.attr("cy", function(d){return scale_y(Math.min(parseFloat(d.New_deaths),0.001))})
-  .attr("cx", function(d){return scale_x(parseFloat(d.New_cases))})
-  .attr("cy", function(d){return scale_y(parseFloat(d.New_deaths))})
-  .attr("r", 1)
+  .attr("cx", function(d){console.log(d); return scale_x(Math.max(1,parseInt(d.New_cases)))})
+  .attr("cy", function(d){return scale_y(Math.max(1,parseInt(d.New_deaths)))})
+  //.attr("cx", function(d){console.log(d); return scale_x(parseInt(d.Cumulative_cases))})
+  //.attr("cy", function(d){return scale_y(parseInt(d.Cumulative_deaths))})
+  //.attr("cx", function(d){return scale_x(parseFloat(d.New_cases))})
+  //.attr("cy", function(d){return scale_y(parseFloat(d.New_deaths))})
+  .attr("r", 5)
 d3.select('svg').append("g")
   .attr("transform","translate(50,50)")
   .call(d3.axisLeft(scale_y).tickValues(tickvalsy).tickFormat(d3.format("~s")))
