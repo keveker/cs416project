@@ -5,23 +5,61 @@
 </head>
 <html>
 <script src='https://d3js.org/d3.v5.min.js'></script>
-<style> circle {fill: lightblue; stroke: black;} </style>
+<style> circle {fill: none; stroke: orange;stroke-width: 2} </style>
 <body onload='init()'>
 <svg width=900 height=900>
 </svg>
 <script>
 async function init() {
-//const data_cars = await d3.csv('https://flunky.github.io/cars2017.csv');
-//const data_WHO = await d3.csv('WHO-COVID-19-global-data.csv');
-const data = await d3.csv("https://keveker.github.io/cs416project/WHO-COVID-19-global-data.csv");
 
 async function loadData() {
-    const returnData = {};
+    const rollupData = {};
+    var returnData = [];
     await d3.csv("https://keveker.github.io/cs416project/WHO-COVID-19-global-data.csv",function(d){
-
+        const curMonth = d.Date_reported.substr(0,7);
+        const curKey = curMonth+d.Country_code
+        //console.log(curMonth,d)
+        if (!rollupData[curKey]){
+            rollupData[curKey] = {
+                month: curMonth,
+                Country_code: d.Country_code,
+                Country: d.Country,
+                WHO_region: d.WHO_region,
+                New_cases: parseInt(d.New_cases),
+                Cumulative_cases: parseInt(d.Cumulative_cases),
+                New_deaths: parseInt(d.New_deaths),
+                Cumulative_deaths: parseInt(d.Cumulative_deaths)
+            }
+        } else {
+            rollupData[curKey].New_cases += parseInt(d.New_cases)
+            rollupData[curKey].Cumulative_cases = parseInt(d.Cumulative_cases)
+            rollupData[curKey].New_deaths += parseInt(d.New_deaths)
+            rollupData[curKey].Cumulative_deaths = parseInt(d.Cumulative_deaths)
+   }
     });
+    for (const curKey in rollupData) {
+        curItem = rollupData[curKey]
+        const curMonth = curItem.month;
+        if(!returnData[curMonth]){
+            returnData[curMonth] = {
+                allCountries: []
+            }
+        } 
+        returnData[curMonth].allCountries.push(curItem)
+    }
+    console.log(returnData)
     return returnData;
 }
+
+//const data_cars = await d3.csv('https://flunky.github.io/cars2017.csv');
+//const data_WHO = await d3.csv('WHO-COVID-19-global-data.csv');
+const orig_data = await d3.csv("https://keveker.github.io/cs416project/WHO-COVID-19-global-data.csv");
+console.log(orig_data)
+const data_by_month = await loadData();
+console.log(data_by_month)
+
+const data = data_by_month["2020-11"].allCountries
+console.log(data)
 
 var scale_x = d3.scaleLog()
   .domain([1, 10000000])
@@ -35,8 +73,10 @@ var tickvalsy =[1,10,100,1000,10000,100000]
 d3.select('svg').append("g")
   .attr("transform","translate(50,50)")
   .selectAll("circle").data(data).enter().append("circle")
-  .attr("cx", function(d){return scale_x(Math.max(1,parseInt(d.New_cases)))})
+  .attr("cx", function(d){console.log(d.New_cases + "," + d.New_deaths);return scale_x(Math.max(1,parseInt(d.New_cases)))})
   .attr("cy", function(d){return scale_y(Math.max(1,parseInt(d.New_deaths)))})
+  //.attr("cx", function(d){console.log(d); return scale_x(Math.max(1,(d.New_cases)))})
+  //.attr("cy", function(d){return scale_y(Math.max(1,(d.New_deaths)))})
   //.attr("cx", function(d){console.log(d); return scale_x(parseInt(d.Cumulative_cases))})
   //.attr("cy", function(d){return scale_y(parseInt(d.Cumulative_deaths))})
   //.attr("cx", function(d){return scale_x(parseFloat(d.New_cases))})
