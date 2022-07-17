@@ -27,10 +27,10 @@ d3.select('svg').append("g")
   .attr("r", 1)
 d3.select('svg').append("g")
   .attr("transform","translate(50,50)")
-  .call(d3.axisLeft(scale_y).tickValues(tickvals).tickFormat(d3.format("~s")))
+  .call(d3.axisLeft(scale_y).tickValues(tickvalsy).tickFormat(d3.format("~s")))
 d3.select('svg').append("g") 
   .attr("transform","translate(50,250)")
-  .call(d3.axisBottom(scale_x).tickValues(tickvals).tickFormat(d3.format("~s")))
+  .call(d3.axisBottom(scale_x).tickValues(tickvalsx).tickFormat(d3.format("~s")))
 
 }
 </script>
