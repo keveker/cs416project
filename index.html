@@ -11,18 +11,19 @@ async function init() {
 const data = await d3.csv('WHO-COVID-19-global-data.csv');
 
 var scale_x = d3.scaleLog()
-  .domain([10, 150])
+  .domain([1, 10,000,000])
   .range([0, 200]);
 var scale_y = d3.scaleLog()
-  .domain([10, 150])
+  .domain([1, 100,000])
   .range([200, 0]);
-var tickvals =[10,20,50,100]
+var tickvalsx =[1,10,100,1000,10000,100000,1000000,10000000]
+var tickvalsy =[1,10,100,1000,10000,100000]
 //console.log(data);
 d3.select('svg').append("g")
   .attr("transform","translate(50,50)")
   .selectAll("circle").data(data).enter().append("circle")
   .attr("cx", function(d){return scale_x(parseFloat(d.New_cases))})
-  .attr("cy", function(d){return scale_y(parseFloat(d.New_cases))})
+  .attr("cy", function(d){return scale_y(parseFloat(d.New_deaths))})
   .attr("r", 1)
 d3.select('svg').append("g")
   .attr("transform","translate(50,50)")
