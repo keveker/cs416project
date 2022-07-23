@@ -5,7 +5,9 @@
 </head>
 <html>
 <script src='https://d3js.org/d3.v5.min.js'></script>
-<style> circle {fill: none; stroke-width: 2} </style>
+<style> 
+circle {fill: none; stroke-width: 3} 
+</style>
     
 </style>
 
@@ -17,9 +19,7 @@ Kevin Eveker
 <br>
 Summer 2022
 </div>
-<script>
 
-</script>
 
 <div>
 <label for="chartselect">Choose the time frame:</label>
@@ -33,11 +33,15 @@ Summer 2022
 </select>
 </div>
 <div id="mainplot">
-<svg width=900 height=900>
+<svg width=900 height=600>
 </svg>
 </div>
 <script>
 var data_by_month;
+var slider_active=false;
+const months_with_data = ["2020-01", "2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12",
+                            "2021-01","2021-02","2021-03","2021-04","2021-05","2021-06","2021-07","2021-08","2021-09","2021-10","2021-11","2021-12",
+                            "2022-01","2022-02","2022-03","2022-04","2022-05","2022-06"]
 async function loadData() {
     const rollupData = {};
     var returnData = [];
@@ -76,6 +80,29 @@ async function loadData() {
     //console.log(returnData)
     return returnData;
 }
+function plotLegend(){
+    var sel = d3.select('svg')
+    sel.append('text') 
+    .attr("transform","translate(150,45)")
+    .text("Africa").style('fill', 'cornflowerblue').attr("font-weight",900)
+    sel.append('text') 
+    .attr("transform","translate(260,45)")
+    .text("Americas").style('fill', 'orange').attr("font-weight",900)
+    sel.append('text') 
+    .attr("transform","translate(370,45)")
+    .text("Europe").style('fill', 'cyan').attr("font-weight",900)
+    sel.append('text') 
+    .attr("transform","translate(482,45)")
+    .text("E Med").style('fill', 'tomato').attr("font-weight",900)
+    sel.append('text') 
+    .attr("transform","translate(595,45)")
+    .text("SE Asia").style('fill', 'khaki').attr("font-weight",900)    
+    sel.append('text') 
+    .attr("transform","translate(705,45)")
+    .text("W Pac").style('fill', 'plum').attr("font-weight",900)
+ //        var colorByRegion={"AFRO": "cornflowerblue","AMRO": "orange", "EURO": "cyan", "EMRO": "tomato", "SEARO": "khaki", "WPRO": "plum"};
+
+}
 
 async function plotData(curMonth="2020-03") {
     // console.log("in Plot Data")
@@ -94,7 +121,7 @@ async function plotData(curMonth="2020-03") {
     .range([0, 800]);
     var scale_y = d3.scaleLog()
     .domain([0.8, 120000])
-    .range([800, 0]);
+    .range([500, 0]);
     var tickvalsx =[1,10,100,1000,10000,100000,1000000,10000000]
     var tickvalsy =[1,10,100,1000,10000,100000]
     d3.select('svg').append("g")
@@ -112,7 +139,7 @@ async function plotData(curMonth="2020-03") {
         console.log(d3.event.pageX)
         console.log(d3.event.pageY)
     tip.style("opacity", 1)
-        .html(d.Country + "<br/> New Cases: " + d.New_cases + "<br/> New Deaths: " + d.New_deaths)
+        .html(d.Country + " (" + d.Country_code + ")" + "<br/> New Cases: " + d.New_cases + "<br/> New Deaths: " + d.New_deaths)
         .style("left", (d3.event.pageX-50) + "px")
         .style("top", (d3.event.pageY-75) + "px")
         .style("z-index", 99)
@@ -121,13 +148,15 @@ async function plotData(curMonth="2020-03") {
     })
     .on("mouseout", function(d) {
         tip.style("opacity", 0)
+        tip.style("left", 0)
+        tip.style("top", 0)
     })
     d3.select('svg').append("g")
     .attr("transform","translate(50,50)")
     .call(d3.axisLeft(scale_y).tickSize(-800).tickValues(tickvalsy).tickFormat(d3.format("~s")))
     d3.select('svg').append("g") 
-    .attr("transform","translate(50,850)")    
-    .call(d3.axisBottom(scale_x).tickSize(-800).tickValues(tickvalsx).tickFormat(d3.format("~s")))
+    .attr("transform","translate(50,550)")    
+    .call(d3.axisBottom(scale_x).tickSize(-500).tickValues(tickvalsx).tickFormat(d3.format("~s")))
     // d3.select('svg').append("g") 
     //   .attr("transform","translate(50,50)")
     //   .call(d3.axisLeft(scale_y).tickSize(-800))
@@ -135,14 +164,17 @@ async function plotData(curMonth="2020-03") {
         .selectAll(".tick line")
         .attr("stroke-dasharray", "2,2")
     d3.select('svg').append('text') 
-    .attr("transform","translate(400,885)")
+    .attr("transform","translate(400,585)")
     .text("Number of Cases")
     d3.select('svg').append('text') 
     .attr("transform","translate(400,20)")
     .text("Data for "+curMonth)
     d3.select('svg').append('text') 
-    .attr("transform","translate(20,475),rotate(-90)")
+    .attr("transform","translate(20,350),rotate(-90)")
     .text("Number of Deaths")
+
+    plotLegend()
+
 
 }
 
@@ -152,17 +184,17 @@ async function init() {
 //const data_cars = await d3.csv('https://flunky.github.io/cars2017.csv');
 //const data_WHO = await d3.csv('WHO-COVID-19-global-data.csv');
 //const orig_data = await d3.csv("https://keveker.github.io/cs416project/WHO-COVID-19-global-data.csv");
-console.log("start init")
-console.log(data_by_month)
+// console.log("start init")
+// console.log(data_by_month)
 data_by_month = await loadData();
-console.log("after load in init")
-console.log(data_by_month)
+// console.log("after load in init")
+// console.log(data_by_month)
 
 //console.log(data_by_month)
 //var curMonth = "2020-11"
 var curMonth = "2020-04"
 
-await plotData("2020-03") ;
+await plotData("2020-01") ;
 //d3.select('svg').text("");
 //d3.select("#mainplot").html="";
 // await plotData("2020-04") ;
@@ -172,6 +204,7 @@ await plotData("2020-03") ;
 
 function changeChart() {
     var option = {}
+    slider_active = false
     console.log("got to changeChart")
     var sel = document.getElementById('chartselect');
     if (sel.size==2 && sel.selectedIndex==1 )
@@ -207,6 +240,8 @@ function changeChart() {
         sel.add( option );
     }   
 
+    var slider = document.getElementById("myRange")
+    slider.opacity = 0;
     var curMonth="userDefined"
     switch(sel.selectedIndex) {
         case 0:
@@ -223,13 +258,24 @@ function changeChart() {
             break;
         case 4:
             curMonth="2022-03"
-            break;        
+            break;     
     }
     if (curMonth!="userDefined"){
         plotData(curMonth)
     }
     else {
-        d3.select('svg').text("");
+        //plotData("2020-03")
+        slider_active = true;
+        slider.opacity = 0.7;
+        sliderUpdate(slider.value)
+        //document.add( slider );
+        // d3.selectAll('input').append('input')
+        //     .attr("type", "range")
+        //     .attr("min", 0)
+        //     .attr("max", 29)
+        //     .attr("value", 2)
+        //     .attr("id", "myDateRange") 
+        //d3.select('svg').text("");
     }
     // console.log(sel.options.length)
     // console.log(sel.options[sel.selectedIndex].value)
@@ -238,6 +284,61 @@ function changeChart() {
     // console.log(e.options[0].value)
     // console.log(e.options[1].value)
 }
+
+function sliderUpdate(curValue) {
+    if (slider_active){
+        var curMonth = months_with_data[curValue];
+        plotData(curMonth)
+    }
+}
 </script>
+
+
+<!-- got code for slider configuration from https://www.w3schools.com/howto/howto_js_rangeslider.asp -->
+
+<div class="slidecontainer">
+    <input type="range" min="0" max="29" value="2" class="slider" id="myRange" onchange="sliderUpdate(this.value)" >
+</div>
+<style>
+.slidecontainer {
+    width: 100%; /* Width of the outside container */
+  }
+  
+  /* The slider itself */
+  .slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 100%; /* Full-width */
+    height: 25px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+  }
+  
+  /* Mouse-over effects */
+  .slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+  }
+  
+  /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: #04AA6D; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+  }
+  
+  .slider::-moz-range-thumb {
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: #04AA6D; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+  }
+</style>
+
 </body>
 </html>
