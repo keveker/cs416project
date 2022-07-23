@@ -39,6 +39,7 @@ Summer 2022
 <script>
 var data_by_month;
 var slider_active=false;
+var lastslidervalue=2;
 const months_with_data = ["2020-01", "2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12",
                             "2021-01","2021-02","2021-03","2021-04","2021-05","2021-06","2021-07","2021-08","2021-09","2021-10","2021-11","2021-12",
                             "2022-01","2022-02","2022-03","2022-04","2022-05","2022-06"]
@@ -83,22 +84,22 @@ async function loadData() {
 function plotLegend(){
     var sel = d3.select('svg')
     sel.append('text') 
-    .attr("transform","translate(150,45)")
+    .attr("transform","translate(199,45)")
     .text("Africa").style('fill', 'cornflowerblue').attr("font-weight",900)
     sel.append('text') 
-    .attr("transform","translate(260,45)")
+    .attr("transform","translate(296,45)")
     .text("Americas").style('fill', 'orange').attr("font-weight",900)
     sel.append('text') 
-    .attr("transform","translate(370,45)")
+    .attr("transform","translate(408,45)")
     .text("Europe").style('fill', 'cyan').attr("font-weight",900)
     sel.append('text') 
-    .attr("transform","translate(482,45)")
+    .attr("transform","translate(520,45)")
     .text("E Med").style('fill', 'tomato').attr("font-weight",900)
     sel.append('text') 
-    .attr("transform","translate(595,45)")
+    .attr("transform","translate(625,45)")
     .text("SE Asia").style('fill', 'khaki').attr("font-weight",900)    
     sel.append('text') 
-    .attr("transform","translate(705,45)")
+    .attr("transform","translate(730,45)")
     .text("W Pac").style('fill', 'plum').attr("font-weight",900)
  //        var colorByRegion={"AFRO": "cornflowerblue","AMRO": "orange", "EURO": "cyan", "EMRO": "tomato", "SEARO": "khaki", "WPRO": "plum"};
 
@@ -117,10 +118,10 @@ async function plotData(curMonth="2020-03") {
         .style("opacity", 0)
 
     var scale_x = d3.scaleLog()
-    .domain([0.8, 12000000])
+    .domain([0.8, 24000000])
     .range([0, 800]);
     var scale_y = d3.scaleLog()
-    .domain([0.8, 120000])
+    .domain([0.8, 240000])
     .range([500, 0]);
     var tickvalsx =[1,10,100,1000,10000,100000,1000000,10000000]
     var tickvalsy =[1,10,100,1000,10000,100000]
@@ -164,15 +165,23 @@ async function plotData(curMonth="2020-03") {
         .selectAll(".tick line")
         .attr("stroke-dasharray", "2,2")
     d3.select('svg').append('text') 
-    .attr("transform","translate(400,585)")
+    .attr("transform","translate(400,575)")
     .text("Number of Cases")
     d3.select('svg').append('text') 
     .attr("transform","translate(400,20)")
     .text("Data for "+curMonth)
     d3.select('svg').append('text') 
-    .attr("transform","translate(20,350),rotate(-90)")
+    .attr("transform","translate(30,350),rotate(-90)")
     .text("Number of Deaths")
-
+    d3.select('svg').append('text') 
+    .attr("transform","translate(0,595)")
+    .text("2020-01")
+    d3.select('svg').append('text') 
+    .attr("transform","translate(340,595)")
+    .text("2021-01")
+    d3.select('svg').append('text') 
+    .attr("transform","translate(680,595)")
+    .text("2021-01")
     plotLegend()
 
 
@@ -192,9 +201,8 @@ data_by_month = await loadData();
 
 //console.log(data_by_month)
 //var curMonth = "2020-11"
-var curMonth = "2020-04"
 
-await plotData("2020-01") ;
+await plotData("2020-03") ;
 //d3.select('svg').text("");
 //d3.select("#mainplot").html="";
 // await plotData("2020-04") ;
@@ -241,32 +249,36 @@ function changeChart() {
     }   
 
     var slider = document.getElementById("myRange")
-    slider.opacity = 0;
     var curMonth="userDefined"
     switch(sel.selectedIndex) {
         case 0:
             curMonth="2020-03"
+            slider.value=2
             break;
         case 1:
             curMonth="2020-09"
-            break;        
+            slider.value=8
+           break;        
         case 2:
             curMonth="2021-03"
-            break;
+            slider.value=14
+           break;
         case 3:
             curMonth="2021-09"
+            slider.value=20
             break;
         case 4:
             curMonth="2022-03"
-            break;     
+            slider.value=26
+           break;     
     }
+    lastslidervalue = slider.value
     if (curMonth!="userDefined"){
         plotData(curMonth)
     }
     else {
         //plotData("2020-03")
         slider_active = true;
-        slider.opacity = 0.7;
         sliderUpdate(slider.value)
         //document.add( slider );
         // d3.selectAll('input').append('input')
@@ -289,6 +301,9 @@ function sliderUpdate(curValue) {
     if (slider_active){
         var curMonth = months_with_data[curValue];
         plotData(curMonth)
+    } else {
+        var slider = document.getElementById("myRange")
+        slider.value = lastslidervalue
     }
 }
 </script>
@@ -308,7 +323,7 @@ function sliderUpdate(curValue) {
   .slider {
     -webkit-appearance: none;  /* Override default CSS styles */
     appearance: none;
-    width: 100%; /* Full-width */
+    width: 850px; /* Full-width */
     height: 25px; /* Specified height */
     background: #d3d3d3; /* Grey background */
     outline: none; /* Remove outline */
