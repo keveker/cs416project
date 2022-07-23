@@ -17,11 +17,27 @@ Kevin Eveker
 <br>
 Summer 2022
 </div>
+<script>
+
+</script>
+
+<div>
+<label for="chartselect">Choose the time frame:</label>
+<select name="chart" id="chartselect" onChange="changeChart()" size="2">
+  <option value="Chart1" selected>March 2020</option>
+  <option value="Chart2">September 2020</option>
+  <!-- <option value="Chart3">March 2021</option>
+  <option value="Chart4">Sept 2021</option>
+  <option value="Chart5">March 2022</option>
+  <option value="Chart6">User Driven</option> -->
+</select>
+</div>
+<div id="mainplot">
 <svg width=900 height=900>
 </svg>
+</div>
 <script>
-async function init() {
-
+var data_by_month;
 async function loadData() {
     const rollupData = {};
     var returnData = [];
@@ -61,81 +77,167 @@ async function loadData() {
     return returnData;
 }
 
+async function plotData(curMonth="2020-03") {
+    // console.log("in Plot Data")
+    // console.log(curMonth)
+    d3.select('svg').text("");
+
+    const data = data_by_month[curMonth].allCountries
+    //console.log(data)
+
+    var tip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0)
+
+    var scale_x = d3.scaleLog()
+    .domain([0.8, 12000000])
+    .range([0, 800]);
+    var scale_y = d3.scaleLog()
+    .domain([0.8, 120000])
+    .range([800, 0]);
+    var tickvalsx =[1,10,100,1000,10000,100000,1000000,10000000]
+    var tickvalsy =[1,10,100,1000,10000,100000]
+    d3.select('svg').append("g")
+    .attr("transform","translate(50,50)")
+    .selectAll("circle").data(data).enter().append("circle")
+    .attr("cx", function(d){return scale_x(Math.max(1,parseInt(d.New_cases)))})
+    .attr("cy", function(d){return scale_y(Math.max(1,parseInt(d.New_deaths)))})
+    .attr("r", 5)
+    .attr("stroke",function(d){
+        var colorByRegion={"AFRO": "cornflowerblue","AMRO": "orange", "EURO": "cyan", "EMRO": "tomato", "SEARO": "khaki", "WPRO": "plum"};
+    return colorByRegion[d.WHO_region]})
+    .on("mouseover", function(d) {
+        console.log("inMouseover")
+        console.log(d)
+        console.log(d3.event.pageX)
+        console.log(d3.event.pageY)
+    tip.style("opacity", 1)
+        .html(d.Country + "<br/> New Cases: " + d.New_cases + "<br/> New Deaths: " + d.New_deaths)
+        .style("left", (d3.event.pageX-50) + "px")
+        .style("top", (d3.event.pageY-75) + "px")
+        .style("z-index", 99)
+        .style("position", "absolute")
+        console.log(tip)
+    })
+    .on("mouseout", function(d) {
+        tip.style("opacity", 0)
+    })
+    d3.select('svg').append("g")
+    .attr("transform","translate(50,50)")
+    .call(d3.axisLeft(scale_y).tickSize(-800).tickValues(tickvalsy).tickFormat(d3.format("~s")))
+    d3.select('svg').append("g") 
+    .attr("transform","translate(50,850)")    
+    .call(d3.axisBottom(scale_x).tickSize(-800).tickValues(tickvalsx).tickFormat(d3.format("~s")))
+    // d3.select('svg').append("g") 
+    //   .attr("transform","translate(50,50)")
+    //   .call(d3.axisLeft(scale_y).tickSize(-800))
+    d3.select('svg')
+        .selectAll(".tick line")
+        .attr("stroke-dasharray", "2,2")
+    d3.select('svg').append('text') 
+    .attr("transform","translate(400,885)")
+    .text("Number of Cases")
+    d3.select('svg').append('text') 
+    .attr("transform","translate(400,20)")
+    .text("Data for "+curMonth)
+    d3.select('svg').append('text') 
+    .attr("transform","translate(20,475),rotate(-90)")
+    .text("Number of Deaths")
+
+}
+
+async function init() {
+
+
 //const data_cars = await d3.csv('https://flunky.github.io/cars2017.csv');
 //const data_WHO = await d3.csv('WHO-COVID-19-global-data.csv');
 //const orig_data = await d3.csv("https://keveker.github.io/cs416project/WHO-COVID-19-global-data.csv");
-const data_by_month = await loadData();
+console.log("start init")
+console.log(data_by_month)
+data_by_month = await loadData();
+console.log("after load in init")
+console.log(data_by_month)
+
 //console.log(data_by_month)
 //var curMonth = "2020-11"
-var curMonth = "2020-03"
-const data = data_by_month[curMonth].allCountries
-//console.log(data)
+var curMonth = "2020-04"
 
-var tip = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0)
-
-var scale_x = d3.scaleLog()
-  .domain([0.8, 12000000])
-  .range([0, 800]);
-var scale_y = d3.scaleLog()
-  .domain([0.8, 120000])
-  .range([800, 0]);
-var tickvalsx =[1,10,100,1000,10000,100000,1000000,10000000]
-var tickvalsy =[1,10,100,1000,10000,100000]
-d3.select('svg').append("g")
-  .attr("transform","translate(50,50)")
-  .selectAll("circle").data(data).enter().append("circle")
-  .attr("cx", function(d){return scale_x(Math.max(1,parseInt(d.New_cases)))})
-  .attr("cy", function(d){return scale_y(Math.max(1,parseInt(d.New_deaths)))})
-  .attr("r", 5)
-  .attr("stroke",function(d){
-    var colorByRegion={"AFRO": "cornflowerblue","AMRO": "orange", "EURO": "cyan", "EMRO": "tomato", "SEARO": "khaki", "WPRO": "plum"};
-return colorByRegion[d.WHO_region]})
-.on("mouseover", function(d) {
-    console.log("inMouseover")
-    console.log(d)
-    console.log(d3.event.pageX)
-    console.log(d3.event.pageY)
-  tip.style("opacity", 1)
-     .html(d.Country + "<br/> New Cases: " + d.New_cases + "<br/> New Deaths: " + d.New_deaths)
-     .style("left", (d3.event.pageX-25) + "px")
-     .style("top", (d3.event.pageY-75) + "px")
-    console.log(tip)
-   })
-  .on("mouseout", function(d) {
-    tip.style("opacity", 0)
-  })
-d3.select('svg').append("g")
-  .attr("transform","translate(50,50)")
-  .call(d3.axisLeft(scale_y).tickSize(-800).tickValues(tickvalsy).tickFormat(d3.format("~s")))
-d3.select('svg').append("g") 
-  .attr("transform","translate(50,850)")    
-  .call(d3.axisBottom(scale_x).tickSize(-800).tickValues(tickvalsx).tickFormat(d3.format("~s")))
-// d3.select('svg').append("g") 
-//   .attr("transform","translate(50,50)")
-//   .call(d3.axisLeft(scale_y).tickSize(-800))
-d3.select('svg')
-    .selectAll(".tick line")
-    .attr("stroke-dasharray", "2,2")
-d3.select('svg').append('text') 
-  .attr("transform","translate(400,885)")
-  .text("Number of Cases")
-d3.select('svg').append('text') 
-  .attr("transform","translate(400,20)")
-  .text("Data for "+curMonth)
-d3.select('svg').append('text') 
-  .attr("transform","translate(20,475),rotate(-90)")
-  .text("Number of Deaths")
-  
-
-
-
-// Add events to circles
+await plotData("2020-03") ;
+//d3.select('svg').text("");
+//d3.select("#mainplot").html="";
+// await plotData("2020-04") ;
 
 
 }
 
+function changeChart() {
+    var option = {}
+    console.log("got to changeChart")
+    var sel = document.getElementById('chartselect');
+    if (sel.size==2 && sel.selectedIndex==1 )
+    {
+        sel.size=3
+        option = document.createElement( 'option' );
+        option.value = "Chart3"
+        option.text = "March 2021";
+        sel.add( option );
+    }
+    if (sel.size==3 && sel.selectedIndex==2 )
+    {
+        sel.size=4
+        option = document.createElement( 'option' );
+        option.value = "Chart4"
+        option.text = "September 2021";
+        sel.add( option );
+    }
+    if (sel.size==4 && sel.selectedIndex==3 )
+    {
+        sel.size=5
+        option = document.createElement( 'option' );
+        option.value = "Chart5"
+        option.text = "March 2022";
+        sel.add( option );
+    }   
+    if (sel.size==5 && sel.selectedIndex==4 )
+    {
+        sel.size=6
+        option = document.createElement( 'option' );
+        option.value = "Chart6"
+        option.text = "User Defined";
+        sel.add( option );
+    }   
+
+    var curMonth="userDefined"
+    switch(sel.selectedIndex) {
+        case 0:
+            curMonth="2020-03"
+            break;
+        case 1:
+            curMonth="2020-09"
+            break;        
+        case 2:
+            curMonth="2021-03"
+            break;
+        case 3:
+            curMonth="2021-09"
+            break;
+        case 4:
+            curMonth="2022-03"
+            break;        
+    }
+    if (curMonth!="userDefined"){
+        plotData(curMonth)
+    }
+    else {
+        d3.select('svg').text("");
+    }
+    // console.log(sel.options.length)
+    // console.log(sel.options[sel.selectedIndex].value)
+    // var e = d3.select('Select').value;
+    // console.log(e.property("value"))
+    // console.log(e.options[0].value)
+    // console.log(e.options[1].value)
+}
 </script>
 </body>
 </html>
