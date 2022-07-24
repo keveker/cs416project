@@ -4,12 +4,32 @@
     <title>CS 416 Data Visualization Project</title>
 </head>
 <html>
-<script src='https://d3js.org/d3.v5.min.js'></script>
+<script src='https://d3js.org/d3.v5.min.js'></script>    
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+
 <style> 
 circle {fill: none; stroke-width: 3} 
 </style>
     
-</style>
+<style>
+    body{
+       background-color: whitesmoke;
+    }
+
+    svg {
+       background-color: white;
+       font-family: 'Lato';
+    }
+
+   .annotation-note-title, text.title {
+     font-weight: bold;
+   }
+
+   text.title {
+     font-size: 1.2em;
+   }
+
+   </style>
 
 <body onload='init()'>
 <div>
@@ -38,6 +58,23 @@ Summer 2022
 </div>
 <script>
 var data_by_month;
+//var sliderButtonColor="red"
+var annotationsList= [
+        {
+          note: {
+            label: "At this time new cases in the US have exceeded all other countries, and only Spain and Italy have more new deaths",
+            title: "United States March 2020",
+            wrap: 200
+          },
+          connector: {
+            end: "dot" 
+          },
+          x: 621,
+          y: 220,
+          dy: 150,
+          dx: 25
+        }
+        ].map(function(d){ d.color = "red"; return d});
 var slider_active=false;
 var lastslidervalue=2;
 const months_with_data = ["2020-01", "2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12",
@@ -165,14 +202,14 @@ async function plotData(curMonth="2020-03") {
         .selectAll(".tick line")
         .attr("stroke-dasharray", "2,2")
     d3.select('svg').append('text') 
-    .attr("transform","translate(400,575)")
-    .text("Number of Cases")
+    .attr("transform","translate(380,575)")
+    .text("Number of New Cases")
     d3.select('svg').append('text') 
     .attr("transform","translate(400,20)")
     .text("Data for "+curMonth)
     d3.select('svg').append('text') 
-    .attr("transform","translate(30,350),rotate(-90)")
-    .text("Number of Deaths")
+    .attr("transform","translate(30,340),rotate(-90)")
+    .text("Number of New Deaths")
     d3.select('svg').append('text') 
     .attr("transform","translate(0,595)")
     .text("2020-01")
@@ -181,9 +218,19 @@ async function plotData(curMonth="2020-03") {
     .text("2021-01")
     d3.select('svg').append('text') 
     .attr("transform","translate(680,595)")
-    .text("2021-01")
+    .text("2022-01")
     plotLegend()
 
+// Annotation examples used from: https://bl.ocks.org/susielu/a464c24d8b42f0c4d9fafe7b48e9e60a
+        const makeAnnotations = d3.annotation()
+          .type(d3.annotationLabel)
+          .annotations(annotationsList)
+
+        d3.select("svg")
+          .append("g")
+          .attr("class", "annotation-group")
+          .style("z-index", 0)
+          .call(makeAnnotations)
 
 }
 
@@ -244,7 +291,7 @@ function changeChart() {
         sel.size=6
         option = document.createElement( 'option' );
         option.value = "Chart6"
-        option.text = "User Defined";
+        option.text = "User Selected Month";
         sel.add( option );
     }   
 
@@ -254,31 +301,330 @@ function changeChart() {
         case 0:
             curMonth="2020-03"
             slider.value=2
+            annotationsList= [
+                {
+                note: {
+                    label: "At this time new cases in the US have exceeded all other countries, and only Spain and Italy have more new deaths",
+                    title: "United States March 2020",
+                    wrap: 200
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 621,
+                y: 220,
+                dy: 150,
+                dx: 25
+                }
+            ].map(function(d){ d.color = "red"; return d});
             break;
         case 1:
             curMonth="2020-09"
             slider.value=8
-           break;        
+            annotationsList= [
+                {
+                note: {
+                    label: "",
+                    title: "US 2020-03",
+                    wrap: 200
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 621,
+                y: 220,
+                dy: 300,
+                dx: -75
+                },
+                {
+                note: {
+                    label: "The US is still near the top in new cases and new deaths but India and Brazil have more new deaths",
+                    title: "United States September 2020",
+                    wrap: 250
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 711,
+                y: 146,
+                dy: -10,
+                dx: -150
+                }
+            ].map(function(d){ d.color = "red"; return d});
+            break;        
         case 2:
             curMonth="2021-03"
             slider.value=14
+            annotationsList= [
+                {
+                note: {
+                    label: "",
+                    title: "US 2020-03",
+                    wrap: 200
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 621,
+                y: 220,
+                dy: 300,
+                dx: -75
+                },
+                {
+                note: {
+                    label: "",
+                    title: "US 2020-09",
+                    wrap: 250
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 711,
+                y: 146,
+                dy: 350,
+                dx: -100
+                },
+                {
+                note: {
+                    label: "Only Brazil has more new cases and new deaths than the US now",
+                    title: "United States March 2021",
+                    wrap: 250
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 729,
+                y: 128,
+                dy: -10,
+                dx: -150
+                }
+            ].map(function(d){ d.color = "red"; return d});
+
+
            break;
         case 3:
             curMonth="2021-09"
             slider.value=20
+
+            annotationsList= [
+                {
+                note: {
+                    label: "",
+                    title: "US 2020-03",
+                    wrap: 200
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 621,
+                y: 220,
+                dy: 300,
+                dx: -75
+                },
+                {
+                note: {
+                    label: "",
+                    title: "US 2020-09",
+                    wrap: 250
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 711,
+                y: 146,
+                dy: 350,
+                dx: -100
+                },
+                {
+                note: {
+                    label: "",
+                    title: "US 2021-03",
+                    wrap: 250
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 729,
+                y: 128,
+                dy: 340,
+                dx: -70
+                },
+                {
+                note: {
+                    label: "US now has the most new cases and new deaths",
+                    title: "United States September 2021",
+                    wrap: 250
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 769,
+                y: 109,
+                dy: 0,
+                dx: -250
+                }
+            ].map(function(d){ d.color = "red"; return d});           
             break;
         case 4:
             curMonth="2022-03"
             slider.value=26
+            annotationsList= [
+                {
+                note: {
+                    label: "",
+                    title: "US 2020-03",
+                    wrap: 200
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 621,
+                y: 220,
+                dy: 300,
+                dx: -75
+                },
+                {
+                note: {
+                    label: "",
+                    title: "US 2020-09",
+                    wrap: 250
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 711,
+                y: 146,
+                dy: 350,
+                dx: -100
+                },
+                {
+                note: {
+                    label: "",
+                    title: "US 2021-03",
+                    wrap: 250
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 729,
+                y: 128,
+                dy: 340,
+                dx: -70
+                },
+                {
+                note: {
+                    label: "",
+                    title: "US 2021-09",
+                    wrap: 250
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 769,
+                y: 109,
+                dy: 330,
+                dx: -50
+                },
+                {
+                note: {
+                    label: "The US still has the most new deaths, but many countries now have more new cases",
+                    title: "United States March 2022",
+                    wrap: 250
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 703.5,
+                y: 136,
+                dy: -1,
+                dx: -150
+                }
+            ].map(function(d){ d.color = "red"; return d});   
            break;     
+           case 5:
+            annotationsList= [
+                {
+                note: {
+                    label: "",
+                    title: "US 2020-03",
+                    wrap: 200
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 621,
+                y: 220,
+                dy: 300,
+                dx: -75
+                },
+                {
+                note: {
+                    label: "",
+                    title: "US 2020-09",
+                    wrap: 250
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 711,
+                y: 146,
+                dy: 350,
+                dx: -100
+                },
+                {
+                note: {
+                    label: "",
+                    title: "US 2021-03",
+                    wrap: 250
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 729,
+                y: 128,
+                dy: 340,
+                dx: -70
+                },
+                {
+                note: {
+                    label: "",
+                    title: "US 2021-09",
+                    wrap: 250
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 769,
+                y: 109,
+                dy: 330,
+                dx: -50
+                },
+                {
+                note: {
+                    label: "",
+                    title: "US 2022-03",
+                    wrap: 250
+                },
+                connector: {
+                    end: "dot" 
+                },
+                x: 703.5,
+                y: 136,
+                dy: -50,
+                dx: -160
+                }
+            ].map(function(d){ d.color = "red"; return d});   
+           break;   
     }
     lastslidervalue = slider.value
     if (curMonth!="userDefined"){
+        document.getElementById("sliderNote").innerHTML = "Slider Not Active until User Selected Month time frame";
         plotData(curMonth)
     }
     else {
         //plotData("2020-03")
         slider_active = true;
+        document.getElementById("sliderNote").innerHTML = "Slider Now Active";
         sliderUpdate(slider.value)
         //document.add( slider );
         // d3.selectAll('input').append('input')
@@ -313,6 +659,9 @@ function sliderUpdate(curValue) {
 
 <div class="slidecontainer">
     <input type="range" min="0" max="29" value="2" class="slider" id="myRange" onchange="sliderUpdate(this.value)" >
+</div>
+<div id="sliderNote">
+    Slider Not Active until User Selected Month time frame
 </div>
 <style>
 .slidecontainer {
