@@ -84,6 +84,7 @@ async function loadData() {
     const rollupData = {};
     var returnData = [];
     await d3.csv("https://keveker.github.io/cs416project/WHO-COVID-19-global-data.csv",function(d){
+    //await d3.csv("https://covid19.who.int/WHO-COVID-19-global-data.csv",function(d){
         const curMonth = d.Date_reported.substr(0,7);
         const curKey = curMonth+d.Country_code
         //console.log(curMonth,d)
