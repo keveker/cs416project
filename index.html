@@ -28,20 +28,28 @@ circle {fill: none; stroke-width: 3}
    text.title {
      font-size: 1.2em;
    }
+   .fixed-top {
+    max-width: 1000px;
+
+   }
 
    </style>
 
 <body onload='init()'>
-<div>
-CS 416: Narrative Visualization Project
-<br>
-Kevin Eveker
-<br>
-Summer 2022
-</div>
+<div class='fixed-top'>
+<h3> How the United States Compares Against other Countries in New COVID Cases and Deaths Over Time</h3>
+<h5> Summer 2022 CS 416: Narrative Visualization Project by Kevin Eveker (keveker2@illinois.edu).
+    This narrative visualization uses the <a href="https://covid19.who.int/WHO-COVID-19-global-data.csv">World Health Orgainazation (WHO) COVID data set</a> 
+    to compare new cases and new deaths by country over time. 
+    The data is presented on a scatter plot for each month where all countries are displayed. 
+    The color of each data point is determined by the WHO region.
+    This narrative focuses on how the United States compares against other countries as time progresses and follows a martini glass structure. 
+    The user is shown data in six month increments with annotations. 
+    After those scenes have been traversed, the user is given the opportunity to dive further into the data and select specific months. </h5>
+<!-- </div>
 
 
-<div>
+<div> -->
 <label for="chartselect">Choose the time frame:</label>
 <select name="chart" id="chartselect" onChange="changeChart()" size="2">
   <option value="Chart1" selected>March 2020</option>
@@ -122,23 +130,26 @@ async function loadData() {
 function plotLegend(){
     var sel = d3.select('svg')
     sel.append('text') 
-    .attr("transform","translate(199,45)")
+    .attr("transform","translate(350,45)")
     .text("Africa").style('fill', 'cornflowerblue').attr("font-weight",900)
     sel.append('text') 
-    .attr("transform","translate(296,45)")
+    .attr("transform","translate(400,45)")
     .text("Americas").style('fill', 'orange').attr("font-weight",900)
     sel.append('text') 
-    .attr("transform","translate(408,45)")
+    .attr("transform","translate(475,45)")
     .text("Europe").style('fill', 'cyan').attr("font-weight",900)
     sel.append('text') 
-    .attr("transform","translate(520,45)")
+    .attr("transform","translate(535,45)")
     .text("E Med").style('fill', 'tomato').attr("font-weight",900)
     sel.append('text') 
-    .attr("transform","translate(625,45)")
+    .attr("transform","translate(590,45)")
     .text("SE Asia").style('fill', 'khaki').attr("font-weight",900)    
     sel.append('text') 
-    .attr("transform","translate(730,45)")
+    .attr("transform","translate(650,45)")
     .text("W Pac").style('fill', 'plum').attr("font-weight",900)
+    sel.append('text') 
+    .attr("transform","translate(150,45)")
+    .text("Color code by WHO Region:").attr("font-weight",900)
  //        var colorByRegion={"AFRO": "cornflowerblue","AMRO": "orange", "EURO": "cyan", "EMRO": "tomato", "SEARO": "khaki", "WPRO": "plum"};
 
 }
@@ -204,22 +215,22 @@ async function plotData(curMonth="2020-03") {
         .attr("stroke-dasharray", "2,2")
     d3.select('svg').append('text') 
     .attr("transform","translate(380,575)")
-    .text("Number of New Cases")
+    .text("Number of New Cases").attr("font-weight",900)
     d3.select('svg').append('text') 
     .attr("transform","translate(400,20)")
-    .text("Data for "+curMonth)
+    .text("Data for "+curMonth).attr("font-weight",900)
     d3.select('svg').append('text') 
     .attr("transform","translate(30,340),rotate(-90)")
-    .text("Number of New Deaths")
+    .text("Number of New Deaths").attr("font-weight",900)
     d3.select('svg').append('text') 
     .attr("transform","translate(0,595)")
-    .text("2020-01")
+    .text("2020-01").attr("font-weight",900)
     d3.select('svg').append('text') 
     .attr("transform","translate(340,595)")
-    .text("2021-01")
+    .text("2021-01").attr("font-weight",900)
     d3.select('svg').append('text') 
     .attr("transform","translate(680,595)")
-    .text("2022-01")
+    .text("2022-01").attr("font-weight",900)
     plotLegend()
 
 // Annotation examples used from: https://bl.ocks.org/susielu/a464c24d8b42f0c4d9fafe7b48e9e60a
